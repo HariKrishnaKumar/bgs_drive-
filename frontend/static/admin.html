@@ -473,6 +473,92 @@
         const fileTypeColors = { code: '#1a73e8', image: '#ea4335', video: '#fbbc04', document: '#0f9d58', other: '#5f6368' };
         const fileTypeLabels = { code: 'Code', image: 'Image', video: 'Video', document: 'Document', other: 'Other' };
         
+        async function renderFiles() {
+        filesContainer.innerHTML = '';
+        try {
+            // 1. Fetch files from the server instead of localStorage
+            const response = await fetch('/api/files');
+            let files = await response.json();
+
+            // The rest of your filtering and rendering logic can stay mostly the same
+            // (You can add back search, trash, starred filters here if you like)
+
+            if (files.length === 0) {
+                filesContainer.innerHTML = `<div class="empty-state"><i class="fas fa-folder-open"></i><p>No files found</p><button class="upload-btn" onclick="document.getElementById('uploadModal').style.display='flex'"><i class="fas fa-plus"></i><span>Add Your First File</span></button></div>`;
+            } else {
+                files.forEach(file => {
+                    const fileCard = createFileCard(file);
+                    filesContainer.appendChild(fileCard);
+                });
+            }
+        } catch (error) {
+            console.error("Failed to fetch files:", error);
+            filesContainer.innerHTML = `<div class="empty-state"><p>Error loading files.</p></div>`;
+        }
+    }
+
+    async function addNewFile() {
+        const name = document.getElementById('fileName').value;
+        const url = document.getElementById('fileLink').value;
+        const type = document.getElementById('fileType').value;
+
+        if (!name || !url) {
+            alert('Please provide a name and URL');
+            return;
+        }
+
+        const newFile = {
+            id: Date.now(),
+            name,
+            url,
+            type,
+            createdAt: new Date().toISOString()
+            // You can add back starred/trashed properties if needed
+        };
+
+        // 2. Send the new file to the server instead of saving to localStorage
+        try {
+            await fetch('/api/files', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newFile)
+            });
+
+            uploadModal.style.display = 'none';
+            resetForm();
+            renderFiles(); // Re-render the file list from the server
+        } catch (error) {
+            console.error("Failed to add file:", error);
+            alert("Could not add file. Please check the server.");
+        }
+    }
+
+    // This function can stay the same
+    function createFileCard(file) {
+        const fileCard = document.createElement('div');
+        fileCard.className = 'file-card';
+        // ... (The rest of this function remains unchanged) ...
+        const timeAgo = getTimeAgo(new Date(file.createdAt));
+        const color = fileTypeColors[file.type] || '#5f6368';
+        fileCard.innerHTML = `<div class="file-thumbnail" style="color: ${color}"><i class="${fileTypeIcons[file.type] || 'fas fa-file'}"></i><div class="file-type-indicator">${fileTypeLabels[file.type]}</div></div><div class="file-info"><div class="file-name">${file.name}</div><div class="file-meta">Added ${timeAgo}</div></div>`;
+        fileCard.addEventListener('click', () => { window.open(file.url, '_blank'); });
+        return fileCard;
+    }
+
+    // Helper functions (keep these as they are)
+    function resetForm() { /* ... unchanged ... */ }
+    function getTimeAgo(date) { /* ... unchanged ... */ }
+    
+    // Initializer
+    document.addEventListener('DOMContentLoaded', () => {
+        renderFiles();
+        // Setup other event listeners (modal buttons, etc.)
+        uploadBtn.addEventListener('click', () => { uploadModal.style.display = 'flex'; });
+        document.getElementById('closeModal').addEventListener('click', () => { uploadModal.style.display = 'none'; });
+        document.getElementById('cancelBtn').addEventListener('click', () => { uploadModal.style.display = 'none'; });
+        document.getElementById('submitBtn').addEventListener('click', addNewFile);
+    });
+
         function init() {
             renderFiles();
             setupEventListeners();

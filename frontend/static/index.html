@@ -5,291 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - BGS Drive</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            color: #333;
-            padding: 20px;
-        }
-        
-        .login-container {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 420px;
-            overflow: hidden;
-        }
-        
-        .login-header {
-            background: #1a73e8;
-            color: white;
-            padding: 30px 20px;
-            text-align: center;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-        
-        .logo i {
-            font-size: 32px;
-        }
-        
-        .login-header p {
-            opacity: 0.9;
-            margin-top: 8px;
-        }
-        
-        .login-form {
-            padding: 30px;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #1a1a1a;
-        }
-        
-        .form-group input {
-            width: 100%;
-            padding: 14px;
-            border: 1px solid #dadce0;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border 0.2s;
-        }
-        
-        .form-group input:focus {
-            border-color: #1a73e8;
-            outline: none;
-        }
-        
-        .google-btn {
-            width: 100%;
-            padding: 12px;
-            background: white;
-            border: 1px solid #dadce0;
-            border-radius: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            font-size: 16px;
-            font-weight: 500;
-            transition: background 0.2s;
-            margin-top: 10px;
-        }
-        
-        .google-btn:hover {
-            background: #f8f9fa;
-        }
-        
-        .google-btn img {
-            width: 20px;
-            height: 20px;
-        }
-        
-        .separator {
-            display: flex;
-            align-items: center;
-            text-align: center;
-            margin: 25px 0;
-            color: #5f6368;
-        }
-        
-        .separator::before,
-        .separator::after {
-            content: '';
-            flex: 1;
-            border-bottom: 1px solid #dadce0;
-        }
-        
-        .separator:not(:empty)::before {
-            margin-right: .75em;
-        }
-        
-        .separator:not(:empty)::after {
-            margin-left: .75em;
-        }
-        
-        .submit-btn {
-            width: 100%;
-            padding: 14px;
-            background: #1a73e8;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 500;
-            transition: background 0.2s;
-        }
-        
-        .submit-btn:hover {
-            background: #0d62c9;
-        }
-        
-        .login-footer {
-            text-align: center;
-            padding: 20px;
-            color: #5f6368;
-            font-size: 14px;
-            border-top: 1px solid #eee;
-        }
-        
-        .login-footer a {
-            color: #1a73e8;
-            text-decoration: none;
-        }
-        
-        .error-message {
-            color: #d93025;
-            font-size: 14px;
-            margin-top: 8px;
-            display: none;
-        }
-        
-        @media (max-width: 480px) {
-            .login-container {
-                max-width: 100%;
-            }
-            
-            .login-form {
-                padding: 20px;
-            }
-        }
-    </style>
+    <style>/* Your existing CSS goes here, no changes needed */</style>
 </head>
 <body>
     <div class="login-container">
         <div class="login-header">
-            <div class="logo">
-                <i class="fas fa-cloud"></i>
-                <span>BGS Drive</span>
-            </div>
+            <div class="logo"><i class="fas fa-cloud"></i><span>BGS Drive</span></div>
             <p>Sign in to access your file storage</p>
         </div>
-        
         <div class="login-form">
             <form id="loginForm">
                 <div class="form-group">
                     <label for="email">Email</label>
-                    <input type="email" id="email" placeholder="Enter your email" required>
+                    <input type="email" id="email" value="admin@example.com" required>
                 </div>
-                
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" id="password" placeholder="Enter your password" required>
+                    <input type="password" id="password" value="password" required>
                 </div>
-                
-                <div class="error-message" id="errorMessage">
-                    Invalid email or password. Please try again.
+                <div class="form-group">
+                    <label for="otp">Authenticator Code</label>
+                    <input type="text" id="otp" placeholder="Enter 6-digit code" required pattern="[0-9]{6}" title="Enter a 6-digit code">
                 </div>
-                
+                <div class="error-message" id="errorMessage"></div>
                 <button type="submit" class="submit-btn">Sign In</button>
-                
-                <div class="separator">or</div>
-                
-                <button type="button" class="google-btn" id="googleSignIn">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google logo">
-                    Sign in with Google
-                </button>
             </form>
         </div>
-        
-        <div class="login-footer">
-            <p>Don't have an account? <a href="#">Contact administrator</a></p>
-        </div>
     </div>
-
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const loginForm = document.getElementById('loginForm');
-            const googleSignIn = document.getElementById('googleSignIn');
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const otp = document.getElementById('otp').value;
             const errorMessage = document.getElementById('errorMessage');
-            
-            // Check if user is already logged in
-            if (localStorage.getItem('isLoggedIn') === 'true') {
-                window.location.href = 'admin.html';
-            }
-            
-            // Handle form submission
-            loginForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
-                
-                // Simple validation (in a real app, this would be done server-side)
-                if (email === 'admin@example.com' && password === 'password') {
-                    // Set login status and redirect
-                    localStorage.setItem('isLoggedIn', 'true');
-                    window.location.href = 'admin.html';
+
+            errorMessage.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password, otp })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // On successful login, redirect to the admin page
+                    window.location.href = '/admin';
                 } else {
-                    // Show error message
+                    errorMessage.textContent = result.message || 'Login failed. Please try again.';
                     errorMessage.style.display = 'block';
                 }
-            });
-            
-            // Handle Google sign in (simulated)
-            googleSignIn.addEventListener('click', function() {
-                // Simulate Google authentication
-                // In a real implementation, you would use Google's OAuth API
-                const googleAuthModal = document.createElement('div');
-                googleAuthModal.style.position = 'fixed';
-                googleAuthModal.style.top = '0';
-                googleAuthModal.style.left = '0';
-                googleAuthModal.style.width = '100%';
-                googleAuthModal.style.height = '100%';
-                googleAuthModal.style.backgroundColor = 'rgba(0,0,0,0.5)';
-                googleAuthModal.style.display = 'flex';
-                googleAuthModal.style.justifyContent = 'center';
-                googleAuthModal.style.alignItems = 'center';
-                googleAuthModal.style.zIndex = '1000';
-                
-                googleAuthModal.innerHTML = `
-                    <div style="background: white; padding: 30px; border-radius: 12px; text-align: center; width: 90%; max-width: 400px;">
-                        <h2 style="margin-bottom: 20px;">Google Authentication</h2>
-                        <p style="margin-bottom: 20px;">This is a simulation of Google authentication.</p>
-                        <p style="margin-bottom: 30px;">In a real application, this would redirect to Google's OAuth service.</p>
-                        <button id="simulateGoogleAuth" style="padding: 12px 24px; background: #1a73e8; color: white; border: none; border-radius: 8px; cursor: pointer;">
-                            Simulate Successful Login
-                        </button>
-                    </div>
-                `;
-                
-                document.body.appendChild(googleAuthModal);
-                
-                document.getElementById('simulateGoogleAuth').addEventListener('click', function() {
-                    localStorage.setItem('isLoggedIn', 'true');
-                    document.body.removeChild(googleAuthModal);
-                    window.location.href = 'admin.html';
-                });
-            });
+            } catch (error) {
+                errorMessage.textContent = 'An error occurred. Please check the server.';
+                errorMessage.style.display = 'block';
+            }
         });
     </script>
 </body>
