@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client File Access - BGS Drive</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 22px;
+            font-weight: 600;
+            color: #1a73e8;
+        }
+        
+        .logo i {
+            font-size: 28px;
+        }
+        
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: #f1f3f4;
+            border-radius: 24px;
+            padding: 10px 15px;
+            width: 50%;
+        }
+        
+        .search-bar input {
+            border: none;
+            background: transparent;
+            width: 100%;
+            padding: 5px;
+            outline: none;
+            font-size: 16px;
+        }
+        
+        .user-actions {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #1a73e8;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .sidebar {
+            width: 200px;
+            background: white;
+            padding: 24px 0;
+            overflow-y: auto;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .sidebar-section {
+            margin-bottom: 24px;
+        }
+        
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 24px;
+            color: #5f6368;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .sidebar-item:hover, .sidebar-item.active {
+            background: #f1f3f4;
+            color: #1a73e8;
+        }
+        
+        .sidebar-item i {
+            font-size: 18px;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+        
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .content-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        
+        .view-info {
+            color: #5f6368;
+            font-size: 14px;
+        }
+        
+        .files-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .file-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .file-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .file-thumbnail {
+            height: 140px;
+            background: linear-gradient(120deg, #f1f3f4 0%, #e8eaed 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+        
+        .file-info {
+            padding: 16px;
+        }
+        
+        .file-name {
+            font-weight: 600;
+            margin-bottom: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .file-meta {
+            font-size: 13px;
+            color: #5f6368;
+        }
+        
+        .file-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 8px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .file-card:hover .file-actions {
+            opacity: 1;
+        }
+        
+        .file-action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: white;
+            border: none;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #5f6368;
+            transition: background 0.2s;
+        }
+        
+        .file-action-btn:hover {
+            background: #f8f9fa;
+        }
+        
+        .file-type-indicator {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 0;
+            color: #5f6368;
+        }
+        
+        .empty-state i {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        
+        .empty-state p {
+            font-size: 18px;
+            margin-bottom: 24px;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 80px;
+            }
+            
+            .sidebar-item span {
+                display: none;
+            }
+            
+            .files-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
+            .search-bar {
+                width: 40%;
+            }
+        }
+
+        .download-btn {
+            background: #0f9d58;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            transition: background 0.2s;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .download-btn:hover {
+            background: #0c8047;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <i class="fas fa-cloud-download-alt"></i>
+            <span>BGS Client Drive</span>
+        </div>
+        
+        <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search files" id="searchInput">
+        </div>
+        
+        <div class="user-actions">
+            <div class="user-avatar">C</div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-item active" data-view="all">
+                    <i class="fas fa-home"></i>
+                    <span>All Files</span>
+                </div>
+                <div class="sidebar-item" data-view="recent">
+                    <i class="fas fa-clock"></i>
+                    <span>Recent</span>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-item" data-view="code">
+                    <i class="fas fa-file-code"></i>
+                    <span>Code Files</span>
+                </div>
+                <div class="sidebar-item" data-view="image">
+                    <i class="fas fa-file-image"></i>
+                    <span>Images</span>
+                </div>
+                <div class="sidebar-item" data-view="video">
+                    <i class="fas fa-file-video"></i>
+                    <span>Videos</span>
+                </div>
+                <div class="sidebar-item" data-view="document">
+                    <i class="fas fa-file-pdf"></i>
+                    <span>Documents</span>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-item">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Client Access</span>
+                </div>
+                <div style="padding: 0 24px;">
+                    <p style="font-size: 12px; color: #5f6368;">Read-only access to uploaded files</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="content-header">
+                <h2 class="content-title" id="contentTitle">All Files</h2>
+                <div class="view-info">
+                    <i class="fas fa-eye"></i> Read-only access
+                </div>
+            </div>
+            
+            <div class="files-grid" id="filesContainer">
+                <!-- Files will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // File type icons mapping
+        const fileTypeIcons = {
+            code: 'fas fa-file-code',
+            image: 'fas fa-file-image',
+            video: 'fas fa-file-video',
+            document: 'fas fa-file-pdf',
+            other: 'fas fa-file'
+        };
+        
+        // File type colors mapping
+        const fileTypeColors = {
+            code: '#1a73e8',
+            image: '#ea4335',
+            video: '#fbbc04',
+            document: '#0f9d58',
+            other: '#5f6368'
+        };
+        
+        // File type labels mapping
+        const fileTypeLabels = {
+            code: 'Code',
+            image: 'Image',
+            video: 'Video',
+            document: 'Document',
+            other: 'Other'
+        };
+        
+        // DOM elements
+        const filesContainer = document.getElementById('filesContainer');
+        const searchInput = document.getElementById('searchInput');
+        const sidebarItems = document.querySelectorAll('.sidebar-item');
+        const contentTitle = document.getElementById('contentTitle');
+        
+        let currentView = 'all';
+        
+        // Initialize the app
+        function init() {
+            renderFiles();
+            setupEventListeners();
+        }
+        
+        // Set up event listeners
+        function setupEventListeners() {
+            searchInput.addEventListener('input', renderFiles);
+            
+            sidebarItems.forEach(item => {
+                if (item.dataset.view) {
+                    item.addEventListener('click', () => {
+                        // Update active state
+                        sidebarItems.forEach(i => i.classList.remove('active'));
+                        item.classList.add('active');
+                        
+                        // Update view
+                        currentView = item.dataset.view;
+                        contentTitle.textContent = item.querySelector('span').textContent;
+                        renderFiles();
+                    });
+                }
+            });
+        }
+        
+        // Render files based on current view and search
+        function renderFiles() {
+            filesContainer.innerHTML = '';
+            
+            // Get files from localStorage (shared with admin interface)
+            let files = JSON.parse(localStorage.getItem('devDriveFiles')) || [];
+            
+            const searchTerm = searchInput.value.toLowerCase();
+            let filteredFiles = files;
+            
+            // Filter out trashed files
+            filteredFiles = filteredFiles.filter(file => !file.trashed);
+            
+            // Filter by view
+            if (currentView === 'recent') {
+                filteredFiles = filteredFiles.filter(file => {
+                    const fileDate = new Date(file.createdAt);
+                    const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+                    return fileDate > oneWeekAgo;
+                }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            } else if (currentView !== 'all') {
+                filteredFiles = filteredFiles.filter(file => file.type === currentView);
+            }
+            
+            // Filter by search term
+            if (searchTerm) {
+                filteredFiles = filteredFiles.filter(file => 
+                    file.name.toLowerCase().includes(searchTerm) || 
+                    (file.description && file.description.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            // Render files or empty state
+            if (filteredFiles.length === 0) {
+                filesContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-folder-open"></i>
+                        <p>No files available</p>
+                        <p style="font-size: 14px;">Files will appear here once uploaded by admin</p>
+                    </div>
+                `;
+            } else {
+                filteredFiles.forEach(file => {
+                    const fileCard = createFileCard(file);
+                    filesContainer.appendChild(fileCard);
+                });
+            }
+        }
+        
+        // Create file card element
+        function createFileCard(file) {
+            const fileCard = document.createElement('div');
+            fileCard.className = 'file-card';
+            fileCard.dataset.id = file.id;
+            
+            const createdAt = new Date(file.createdAt);
+            const timeAgo = getTimeAgo(createdAt);
+            const color = fileTypeColors[file.type] || '#5f6368';
+            
+            fileCard.innerHTML = `
+                <div class="file-thumbnail" style="color: ${color}">
+                    <i class="${fileTypeIcons[file.type] || 'fas fa-file'}"></i>
+                    <div class="file-type-indicator">${fileTypeLabels[file.type] || 'File'}</div>
+                </div>
+                <div class="file-actions">
+                    <button class="file-action-btn" data-action="download" title="Download">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+                <div class="file-info">
+                    <div class="file-name">${file.name}</div>
+                    <div class="file-meta">Added ${timeAgo}</div>
+                    <button class="download-btn" data-action="open">
+                        <i class="fas fa-external-link-alt"></i> Open File
+                    </button>
+                </div>
+            `;
+            
+            // Add event listeners to action buttons
+            const downloadBtn = fileCard.querySelector('[data-action="download"]');
+            const openBtn = fileCard.querySelector('[data-action="open"]');
+            
+            downloadBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                downloadFile(file);
+            });
+            
+            openBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                window.open(file.url, '_blank');
+            });
+            
+            // Open link on card click
+            fileCard.addEventListener('click', () => {
+                window.open(file.url, '_blank');
+            });
+            
+            return fileCard;
+        }
+        
+        // Download file function
+        function downloadFile(file) {
+            // Create a temporary anchor element
+            const a = document.createElement('a');
+            a.href = file.url;
+            a.download = file.name;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+        
+        // Get time ago string
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diffInSeconds = Math.floor((now - date) / 1000);
+            
+            if (diffInSeconds < 60) {
+                return 'just now';
+            }
+            
+            const diffInMinutes = Math.floor(diffInSeconds / 60);
+            if (diffInMinutes < 60) {
+                return `${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''} ago`;
+            }
+            
+            const diffInHours = Math.floor(diffInMinutes / 60);
+            if (diffInHours < 24) {
+                return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
+            }
+            
+            const diffInDays = Math.floor(diffInHours / 24);
+            if (diffInDays < 30) {
+                return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
+            }
+            
+            const diffInMonths = Math.floor(diffInDays / 30);
+            if (diffInMonths < 12) {
+                return `${diffInMonths} month${diffInMonths > 1 ? 's' : ''} ago`;
+            }
+            
+            const diffInYears = Math.floor(diffInMonths / 12);
+            return `${diffInYears} year${diffInYears > 1 ? 's' : ''} ago`;
+        }
+        
+        // Initialize the app
+        init();
+    </script>
+</body>
+</html>

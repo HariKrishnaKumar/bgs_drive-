@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DevDrive - Your Personal File Storage</title>
+    <title>Login - BGS Drive</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -15,555 +15,282 @@
         
         body {
             display: flex;
-            flex-direction: column;
-            height: 100vh;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             color: #333;
+            padding: 20px;
         }
         
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 24px;
-            background-color: white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        .login-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 420px;
+            overflow: hidden;
+        }
+        
+        .login-header {
+            background: #1a73e8;
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
         }
         
         .logo {
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 12px;
-            font-size: 22px;
+            font-size: 24px;
             font-weight: 600;
-            color: #1a73e8;
+            margin-bottom: 10px;
         }
         
         .logo i {
-            font-size: 28px;
+            font-size: 32px;
         }
         
-        .search-bar {
-            display: flex;
-            align-items: center;
-            background: #f1f3f4;
-            border-radius: 24px;
-            padding: 10px 15px;
-            width: 50%;
+        .login-header p {
+            opacity: 0.9;
+            margin-top: 8px;
         }
         
-        .search-bar input {
-            border: none;
-            background: transparent;
-            width: 100%;
-            padding: 5px;
-            outline: none;
-            font-size: 16px;
+        .login-form {
+            padding: 30px;
         }
         
-        .user-actions {
-            display: flex;
-            gap: 20px;
-            align-items: center;
+        .form-group {
+            margin-bottom: 20px;
         }
         
-        .user-actions i {
-            font-size: 20px;
-            color: #5f6368;
-            cursor: pointer;
-        }
-        
-        .user-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background-color: #1a73e8;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        
-        .container {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-        
-        .sidebar {
-            width: 250px;
-            background: white;
-            padding: 24px 0;
-            overflow-y: auto;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
-        }
-        
-        .sidebar-section {
-            margin-bottom: 24px;
-        }
-        
-        .sidebar-item {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 12px 24px;
-            color: #5f6368;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .sidebar-item:hover, .sidebar-item.active {
-            background: #f1f3f4;
-            color: #1a73e8;
-        }
-        
-        .sidebar-item i {
-            font-size: 18px;
-        }
-        
-        .main-content {
-            flex: 1;
-            padding: 24px;
-            overflow-y: auto;
-        }
-        
-        .content-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-        
-        .content-title {
-            font-size: 24px;
-            font-weight: 600;
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
             color: #1a1a1a;
         }
         
-        .upload-btn {
-            background: #1a73e8;
-            color: white;
-            border: none;
-            padding: 12px 24px;
+        .form-group input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.2s;
+        }
+        
+        .form-group input:focus {
+            border-color: #1a73e8;
+            outline: none;
+        }
+        
+        .google-btn {
+            width: 100%;
+            padding: 12px;
+            background: white;
+            border: 1px solid #dadce0;
             border-radius: 8px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
+            gap: 12px;
+            font-size: 16px;
             font-weight: 500;
             transition: background 0.2s;
-            box-shadow: 0 2px 5px rgba(26, 115, 232, 0.3);
+            margin-top: 10px;
         }
         
-        .upload-btn:hover {
-            background: #0d62c9;
-            transform: translateY(-2px);
-        }
-        
-        .files-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-        }
-        
-        .file-card {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-            transition: transform 0.2s, box-shadow 0.2s;
-            cursor: pointer;
-            position: relative;
-        }
-        
-        .file-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        .file-thumbnail {
-            height: 140px;
-            background: linear-gradient(120deg, #f1f3f4 0%, #e8eaed 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-        }
-        
-        .file-info {
-            padding: 16px;
-        }
-        
-        .file-name {
-            font-weight: 600;
-            margin-bottom: 6px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .file-meta {
-            font-size: 13px;
-            color: #5f6368;
-        }
-        
-        .file-actions {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            display: flex;
-            gap: 8px;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-        
-        .file-card:hover .file-actions {
-            opacity: 1;
-        }
-        
-        .file-action-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: white;
-            border: none;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #5f6368;
-            transition: background 0.2s;
-        }
-        
-        .file-action-btn:hover {
+        .google-btn:hover {
             background: #f8f9fa;
         }
         
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); align-items: center; justify-content: center; z-index: 1000; }
-        .modal-content { background: white; padding: 28px; border-radius: 16px; width: 500px; max-width: 90%; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15); }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .modal-title { font-size: 22px; font-weight: 600; color: #1a1a1a; }
-        .close-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: #5f6368; }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: #1a1a1a; }
-        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; border: 1px solid #dadce0; border-radius: 8px; font-size: 16px; transition: border 0.2s; }
-        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: #1a73e8; outline: none; }
-        .form-group textarea { min-height: 100px; resize: vertical; }
-        .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; }
-        .modal-btn { padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.2s; }
-        .cancel-btn { background: #f1f3f4; border: none; color: #5f6368; }
-        .cancel-btn:hover { background: #e8eaed; }
-        .submit-btn { background: #1a73e8; border: none; color: white; }
-        .submit-btn:hover { background: #0d62c9; }
-        .empty-state { text-align: center; padding: 60px 0; color: #5f6368; }
-        .empty-state i { font-size: 64px; margin-bottom: 16px; opacity: 0.5; }
-        .empty-state p { font-size: 18px; margin-bottom: 24px; }
-        .empty-state .upload-btn { margin: 0 auto; }
-        .file-type-indicator { position: absolute; bottom: 10px; right: 10px; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; background: rgba(0, 0, 0, 0.7); color: white; }
-        .storage-info { padding: 0 24px; margin-top: 20px; }
-        .storage-progress { background: #f1f3f4; height: 8px; border-radius: 4px; overflow: hidden; margin-bottom: 8px; }
-        .storage-progress-inner { background: #1a73e8; height: 100%; border-radius: 4px; transition: width 0.3s; }
-        .storage-text { font-size: 13px; color: #5f6368; }
-
-        /* --- ADDED CSS FOR SLIDE-IN PANEL --- */
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.4);
-            z-index: 1999;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
-        }
-
-        .overlay.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .user-profile-panel {
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: 300px;
-            height: 100%;
-            background-color: white;
-            box-shadow: -2px 0 15px rgba(0, 0, 0, 0.1);
-            z-index: 2000;
-            padding: 24px;
-            transform: translateX(100%);
-            transition: transform 0.3s ease-in-out;
-        }
-
-        .user-profile-panel.show {
-            transform: translateX(0);
-        }
-
-        .panel-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 15px;
+        .google-btn img {
+            width: 20px;
+            height: 20px;
         }
         
-        .panel-title {
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        .panel-close-btn {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-        }
-
-        .panel-content .user-info {
+        .separator {
             display: flex;
-            flex-direction: column;
             align-items: center;
             text-align: center;
-        }
-
-        .panel-content .user-avatar-large {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background-color: #1a73e8;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 36px;
-            margin-bottom: 16px;
-        }
-
-        .panel-content .user-name {
-            font-size: 22px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        
-        .panel-content .user-email {
-            font-size: 14px;
+            margin: 25px 0;
             color: #5f6368;
         }
-        /* --- END OF ADDED CSS --- */
-
-        @media (max-width: 768px) {
-            .sidebar { width: 80px; }
-            .sidebar-item span { display: none; }
-            .files-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
-            .search-bar { width: 40%; }
+        
+        .separator::before,
+        .separator::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #dadce0;
+        }
+        
+        .separator:not(:empty)::before {
+            margin-right: .75em;
+        }
+        
+        .separator:not(:empty)::after {
+            margin-left: .75em;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        
+        .submit-btn:hover {
+            background: #0d62c9;
+        }
+        
+        .login-footer {
+            text-align: center;
+            padding: 20px;
+            color: #5f6368;
+            font-size: 14px;
+            border-top: 1px solid #eee;
+        }
+        
+        .login-footer a {
+            color: #1a73e8;
+            text-decoration: none;
+        }
+        
+        .error-message {
+            color: #d93025;
+            font-size: 14px;
+            margin-top: 8px;
+            display: none;
+        }
+        
+        @media (max-width: 480px) {
+            .login-container {
+                max-width: 100%;
+            }
+            
+            .login-form {
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="logo">
-            <i class="fas fa-cloud-upload-alt"></i>
-            <span>BGS Admin Drive</span>
+    <div class="login-container">
+        <div class="login-header">
+            <div class="logo">
+                <i class="fas fa-cloud"></i>
+                <span>BGS Drive</span>
+            </div>
+            <p>Sign in to access your file storage</p>
         </div>
         
-        <div class="search-bar">
-            <i class="fas fa-search"></i>
-            <input type="text" placeholder="Search files" id="searchInput">
-        </div>
-        
-        <div class="user-actions">
-            <!-- <i class="fas fa-cog"></i>
-            <i class="fas fa-bell"></i> -->
-            <div class="user-avatar">H</div>
-        </div>
-    </header>
-    
-    <div class="container">
-        <div class="sidebar">
-            <div class="sidebar-section">
-                <div class="sidebar-item active" data-view="all"> <i class="fas fa-home"></i> <span>My Drive</span> </div>
-                <div class="sidebar-item" data-view="recent"> <i class="fas fa-clock"></i> <span>Recent</span> </div>
-                <div class="sidebar-item" data-view="starred"> <i class="fas fa-star"></i> <span>Starred</span> </div>
-                <div class="sidebar-item" data-view="trash"> <i class="fas fa-trash"></i> <span>Trash</span> </div>
-            </div>
-            <div class="sidebar-section">
-                <div class="sidebar-item" data-view="code"> <i class="fas fa-file-code"></i> <span>Code Files</span> </div>
-                <div class="sidebar-item" data-view="image"> <i class="fas fa-file-image"></i> <span>Images</span> </div>
-                <div class="sidebar-item" data-view="video"> <i class="fas fa-file-video"></i> <span>Videos</span> </div>
-                <div class="sidebar-item" data-view="document"> <i class="fas fa-file-pdf"></i> <span>Documents</span> </div>
-            </div>
-            <div class="sidebar-section">
-                <div class="sidebar-item"> <i class="fas fa-database"></i> <span>Storage</span> </div>
-                <div class="storage-info">
-                    <div class="storage-progress"> <div class="storage-progress-inner" id="storageProgress"></div> </div>
-                    <div class="storage-text" id="storageText">4.2 GB of 15 GB used</div>
+        <div class="login-form">
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="Enter your email" required>
                 </div>
-            </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter your password" required>
+                </div>
+                
+                <div class="error-message" id="errorMessage">
+                    Invalid email or password. Please try again.
+                </div>
+                
+                <button type="submit" class="submit-btn">Sign In</button>
+                
+                <div class="separator">or</div>
+                
+                <button type="button" class="google-btn" id="googleSignIn">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google logo">
+                    Sign in with Google
+                </button>
+            </form>
         </div>
         
-        <div class="main-content">
-            <div class="content-header">
-                <h2 class="content-title" id="contentTitle">My Drive</h2>
-                <button class="upload-btn" id="uploadBtn"> <i class="fas fa-plus"></i> <span>Add Link</span> </button>
-            </div>
-            <div class="files-grid" id="filesContainer"> </div>
-        </div>
-    </div>
-    
-    <div class="modal" id="uploadModal">
-        <div class="modal-content">
-            <div class="modal-header"> <h3 class="modal-title">Add File Link</h3> <button class="close-btn" id="closeModal">&times;</button> </div>
-            <div class="form-group"> <label for="fileName">File Name *</label> <input type="text" id="fileName" placeholder="Enter file name" required> </div>
-            <div class="form-group"> <label for="fileLink">File URL *</label> <input type="url" id="fileLink" placeholder="https://github.com/username/repository" required> </div>
-            <div class="form-group"> <label for="fileType">File Type *</label> <select id="fileType" required> <option value="code">Code File</option> <option value="image">Image</option> <option value="video">Video</option> <option value="document">Document</option> <option value="other">Other</option> </select> </div>
-            <div class="form-group"> <label for="fileDescription">Description (Optional)</label> <textarea id="fileDescription" placeholder="Add a description of the file"></textarea> </div>
-            <div class="modal-actions"> <button class="modal-btn cancel-btn" id="cancelBtn">Cancel</button> <button class="modal-btn submit-btn" id="submitBtn">Add Link</button> </div>
+        <div class="login-footer">
+            <p>Don't have an account? <a href="#">Contact administrator</a></p>
         </div>
     </div>
 
-    <div class="overlay" id="overlay"></div>
-    <div class="user-profile-panel" id="userProfilePanel">
-        <div class="panel-header">
-            <h3 class="panel-title">Account Info</h3>
-            <button class="panel-close-btn" id="panelCloseBtn">&times;</button>
-        </div>
-        <div class="panel-content">
-            <div class="user-info">
-                <div class="user-avatar-large">D</div>
-                <div class="user-name">Dev User</div>
-                <div class="user-email">dev.user@example.com</div>
-            </div>
-        </div>
-    </div>
     <script>
-        // Data structure to hold files
-        let files = JSON.parse(localStorage.getItem('devDriveFiles')) || [];
-        let currentView = 'all';
-        
-        // --- MODIFIED JAVASCRIPT ---
-        // DOM elements
-        const filesContainer = document.getElementById('filesContainer');
-        const uploadBtn = document.getElementById('uploadBtn');
-        const uploadModal = document.getElementById('uploadModal');
-        const closeModal = document.getElementById('closeModal');
-        const cancelBtn = document.getElementById('cancelBtn');
-        const submitBtn = document.getElementById('submitBtn');
-        const contentTitle = document.getElementById('contentTitle');
-        const searchInput = document.getElementById('searchInput');
-        const sidebarItems = document.querySelectorAll('.sidebar-item');
-        const storageProgress = document.getElementById('storageProgress');
-        const storageText = document.getElementById('storageText');
-        const userAvatar = document.querySelector('.user-avatar');
-        
-        // New elements for the slide-in panel
-        const userProfilePanel = document.getElementById('userProfilePanel');
-        const panelCloseBtn = document.getElementById('panelCloseBtn');
-        const overlay = document.getElementById('overlay');
-        
-        // File type icons mapping... (rest of the file mappings remain the same)
-        const fileTypeIcons = { code: 'fas fa-file-code', image: 'fas fa-file-image', video: 'fas fa-file-video', document: 'fas fa-file-pdf', other: 'fas fa-file' };
-        const fileTypeColors = { code: '#1a73e8', image: '#ea4335', video: '#fbbc04', document: '#0f9d58', other: '#5f6368' };
-        const fileTypeLabels = { code: 'Code', image: 'Image', video: 'Video', document: 'Document', other: 'Other' };
-        
-        function init() {
-            renderFiles();
-            setupEventListeners();
-            updateStorageInfo();
-        }
-        
-        // Set up event listeners
-        function setupEventListeners() {
-            uploadBtn.addEventListener('click', () => { uploadModal.style.display = 'flex'; });
-            closeModal.addEventListener('click', () => { uploadModal.style.display = 'none'; resetForm(); });
-            cancelBtn.addEventListener('click', () => { uploadModal.style.display = 'none'; resetForm(); });
-            submitBtn.addEventListener('click', addNewFile);
-            window.addEventListener('click', (e) => { if (e.target === uploadModal) { uploadModal.style.display = 'none'; resetForm(); } });
-            searchInput.addEventListener('input', renderFiles);
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
+            const googleSignIn = document.getElementById('googleSignIn');
+            const errorMessage = document.getElementById('errorMessage');
             
-            sidebarItems.forEach(item => {
-                if (item.dataset.view) {
-                    item.addEventListener('click', () => {
-                        sidebarItems.forEach(i => i.classList.remove('active'));
-                        item.classList.add('active');
-                        currentView = item.dataset.view;
-                        contentTitle.textContent = item.querySelector('span').textContent;
-                        renderFiles();
-                    });
+            // Check if user is already logged in
+            if (localStorage.getItem('isLoggedIn') === 'true') {
+                window.location.href = 'admin.html';
+            }
+            
+            // Handle form submission
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                
+                // Simple validation (in a real app, this would be done server-side)
+                if (email === 'admin@example.com' && password === 'password') {
+                    // Set login status and redirect
+                    localStorage.setItem('isLoggedIn', 'true');
+                    window.location.href = 'admin.html';
+                } else {
+                    // Show error message
+                    errorMessage.style.display = 'block';
                 }
             });
-
-            // Event listeners for the slide-in panel
-            userAvatar.addEventListener('click', () => {
-                userProfilePanel.classList.add('show');
-                overlay.classList.add('show');
+            
+            // Handle Google sign in (simulated)
+            googleSignIn.addEventListener('click', function() {
+                // Simulate Google authentication
+                // In a real implementation, you would use Google's OAuth API
+                const googleAuthModal = document.createElement('div');
+                googleAuthModal.style.position = 'fixed';
+                googleAuthModal.style.top = '0';
+                googleAuthModal.style.left = '0';
+                googleAuthModal.style.width = '100%';
+                googleAuthModal.style.height = '100%';
+                googleAuthModal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+                googleAuthModal.style.display = 'flex';
+                googleAuthModal.style.justifyContent = 'center';
+                googleAuthModal.style.alignItems = 'center';
+                googleAuthModal.style.zIndex = '1000';
+                
+                googleAuthModal.innerHTML = `
+                    <div style="background: white; padding: 30px; border-radius: 12px; text-align: center; width: 90%; max-width: 400px;">
+                        <h2 style="margin-bottom: 20px;">Google Authentication</h2>
+                        <p style="margin-bottom: 20px;">This is a simulation of Google authentication.</p>
+                        <p style="margin-bottom: 30px;">In a real application, this would redirect to Google's OAuth service.</p>
+                        <button id="simulateGoogleAuth" style="padding: 12px 24px; background: #1a73e8; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                            Simulate Successful Login
+                        </button>
+                    </div>
+                `;
+                
+                document.body.appendChild(googleAuthModal);
+                
+                document.getElementById('simulateGoogleAuth').addEventListener('click', function() {
+                    localStorage.setItem('isLoggedIn', 'true');
+                    document.body.removeChild(googleAuthModal);
+                    window.location.href = 'admin.html';
+                });
             });
-
-            panelCloseBtn.addEventListener('click', () => {
-                userProfilePanel.classList.remove('show');
-                overlay.classList.remove('show');
-            });
-
-            overlay.addEventListener('click', () => {
-                userProfilePanel.classList.remove('show');
-                overlay.classList.remove('show');
-            });
-        }
-        // --- END OF MODIFIED JAVASCRIPT ---
-
-        function renderFiles() { /* This function remains the same as your original */
-            filesContainer.innerHTML = '';
-            const searchTerm = searchInput.value.toLowerCase();
-            let filteredFiles = files;
-            if (currentView === 'recent') { filteredFiles = filteredFiles.filter(file => { const fileDate = new Date(file.createdAt); const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000); return fileDate > oneWeekAgo && !file.trashed; }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); } else if (currentView === 'starred') { filteredFiles = filteredFiles.filter(file => file.starred && !file.trashed); } else if (currentView === 'trash') { filteredFiles = filteredFiles.filter(file => file.trashed); } else if (currentView !== 'all') { filteredFiles = filteredFiles.filter(file => file.type === currentView && !file.trashed); } else { filteredFiles = filteredFiles.filter(file => !file.trashed); }
-            if (searchTerm) { filteredFiles = filteredFiles.filter(file => file.name.toLowerCase().includes(searchTerm) || (file.description && file.description.toLowerCase().includes(searchTerm))); }
-            if (filteredFiles.length === 0) { filesContainer.innerHTML = `<div class="empty-state"> <i class="fas fa-folder-open"></i> <p>No files found</p> <button class="upload-btn" id="emptyUploadBtn"> <i class="fas fa-plus"></i> <span>Add Your First File</span> </button> </div>`; document.getElementById('emptyUploadBtn').addEventListener('click', () => { uploadModal.style.display = 'flex'; }); } else { filteredFiles.forEach(file => { const fileCard = createFileCard(file); filesContainer.appendChild(fileCard); }); }
-        }
-        
-        function createFileCard(file) { /* This function remains the same as your original */
-            const fileCard = document.createElement('div'); fileCard.className = 'file-card'; fileCard.dataset.id = file.id; const createdAt = new Date(file.createdAt); const timeAgo = getTimeAgo(createdAt); const color = fileTypeColors[file.type] || '#5f6368';
-            fileCard.innerHTML = `<div class="file-thumbnail" style="color: ${color}"> <i class="${fileTypeIcons[file.type] || 'fas fa-file'}"></i> <div class="file-type-indicator">${fileTypeLabels[file.type] || 'File'}</div> </div> <div class="file-actions"> <button class="file-action-btn ${file.starred ? 'starred' : ''}" data-action="star"> <i class="fas fa-star"></i> </button> <button class="file-action-btn" data-action="trash"> <i class="fas fa-trash"></i> </button> </div> <div class="file-info"> <div class="file-name">${file.name}</div> <div class="file-meta">Added ${timeAgo}</div> </div>`;
-            const starBtn = fileCard.querySelector('[data-action="star"]'); const trashBtn = fileCard.querySelector('[data-action="trash"]');
-            starBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleStar(file.id); }); trashBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleTrash(file.id); });
-            fileCard.addEventListener('click', () => { window.open(file.url, '_blank'); }); return fileCard;
-        }
-        
-        function toggleStar(fileId) { /* This function remains the same */ files = files.map(file => { if (file.id === fileId) { return { ...file, starred: !file.starred }; } return file; }); localStorage.setItem('devDriveFiles', JSON.stringify(files)); renderFiles(); }
-        function toggleTrash(fileId) { /* This function remains the same */ files = files.map(file => { if (file.id === fileId) { return { ...file, trashed: !file.trashed }; } return file; }); localStorage.setItem('devDriveFiles', JSON.stringify(files)); updateStorageInfo(); renderFiles(); }
-        function addNewFile() { /* This function remains the same */ const name = document.getElementById('fileName').value; const url = document.getElementById('fileLink').value; const type = document.getElementById('fileType').value; const description = document.getElementById('fileDescription').value; if (!name || !url) { alert('Please provide a name and URL for the file'); return; } if (!isValidUrl(url)) { alert('Please enter a valid URL'); return; } const newFile = { id: Date.now(), name, url, type, description, starred: false, trashed: false, createdAt: new Date().toISOString() }; files.push(newFile); localStorage.setItem('devDriveFiles', JSON.stringify(files)); uploadModal.style.display = 'none'; resetForm(); updateStorageInfo(); filesContainer.innerHTML = ''; const fileCard = createFileCard(newFile); filesContainer.appendChild(fileCard); }
-        function updateStorageInfo() { /* This function remains the same */ const totalFiles = files.filter(file => !file.trashed).length; const storagePercentage = Math.min(100, (totalFiles / 50) * 100); const storageGB = (totalFiles * 0.1).toFixed(1); storageProgress.style.width = `${storagePercentage}%`; storageText.textContent = `${storageGB} GB of 5 GB used`; }
-        function isValidUrl(string) { /* This function remains the same */ try { new URL(string); return true; } catch (_) { return false; } }
-        function resetForm() { /* This function remains the same */ document.getElementById('fileName').value = ''; document.getElementById('fileLink').value = ''; document.getElementById('fileType').value = 'code'; document.getElementById('fileDescription').value = ''; }
-        function getTimeAgo(date) { /* This function remains the same */ const now = new Date(); const diffInSeconds = Math.floor((now - date) / 1000); if (diffInSeconds < 60) { return 'just now'; } const diffInMinutes = Math.floor(diffInSeconds / 60); if (diffInMinutes < 60) { return `${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''} ago`; } const diffInHours = Math.floor(diffInMinutes / 60); if (diffInHours < 24) { return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`; } const diffInDays = Math.floor(diffInHours / 24); if (diffInDays < 30) { return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`; } const diffInMonths = Math.floor(diffInDays / 30); if (diffInMonths < 12) { return `${diffInMonths} month${diffInMonths > 1 ? 's' : ''} ago`; } const diffInYears = Math.floor(diffInMonths / 12); return `${diffInYears} year${diffInYears > 1 ? 's' : ''} ago`; }
-        
-        init();
-
-            // Check backend heartbeat before loading anything
-        async function checkSystemStatus() {
-        try {
-            const res = await fetch("/status");  // relative path (works via IP)
-            if (!res.ok) throw new Error("Server not responding");
-            const data = await res.json();
-            if (!data.online) throw new Error("System offline");
-        } catch (err) {
-            document.body.innerHTML = `
-                <div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;font-family:sans-serif;">
-                    <h1 style="color:#d9534f;">⚠ Main System Offline</h1>
-                    <p>The service is not running. Please start the main system.</p>
-                </div>`;
-            throw err; // stop app execution
-        }
-    }
-
-    // Run check before initializing app
-    await checkSystemStatus();
+        });
     </script>
 </body>
 </html>
