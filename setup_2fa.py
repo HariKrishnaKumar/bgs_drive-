@@ -9,12 +9,14 @@ secret_key = pyotp.random_base32()
 # Replace 'admin@bgsdrive.com' with your actual username/email.
 # Replace 'BGS Drive' with your application's name.
 provisioning_uri = pyotp.totp.TOTP(secret_key).provisioning_uri(
-    name='admin@bgsdrive.com',
+    name='myadmin@bgs.com',
     issuer_name='BGS Drive'
 )
 
+print("--- 2FA Setup ---")
 print(f"Your 2FA Secret Key is: {secret_key}")
-print("A QR code has been saved as 'qrcode.png'. Scan it with your authenticator app.")
+print("A QR code has been saved as 'qrcode.png'. Scan it with your Google Authenticator app.")
+print("IMPORTANT: Copy the secret key above and paste it into the SECRET_KEY variable in main.py")
 
 # Generate the QR code image
 img = qrcode.make(provisioning_uri)
