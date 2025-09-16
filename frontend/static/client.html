@@ -91,6 +91,7 @@
             padding: 24px 0;
             overflow-y: auto;
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
         }
         
         .sidebar-section {
@@ -244,24 +245,115 @@
             background: #0c8047;
         }
         
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 80px;
-            }
-            .sidebar-item span {
-                display: none;
-            }
+        /* Mobile menu button */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #1a73e8;
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 1024px) {
             .files-grid {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
             }
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                padding: 12px 16px;
+            }
+            
+            .logo span {
+                font-size: 18px;
+            }
+            
             .search-bar {
                 width: 40%;
+                margin: 0 10px;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+            
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100%;
+                z-index: 1000;
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .container {
+                position: relative;
+            }
+            
+            .main-content {
+                padding: 16px;
+            }
+            
+            .content-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .files-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 15px;
+            }
+            
+            .file-thumbnail {
+                height: 120px;
+            }
+            
+            .view-info {
+                font-size: 12px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .search-bar {
+                display: none;
+            }
+            
+            .logo span {
+                font-size: 16px;
+            }
+            
+            .files-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .content-title {
+                font-size: 20px;
+            }
+            
+            .file-thumbnail {
+                height: 100px;
+                font-size: 32px;
+            }
+            
+            .sidebar-item span {
+                display: block;
             }
         }
     </style>
 </head>
 <body>
     <header>
+        <button class="menu-toggle" id="menuToggle">
+            <i class="fas fa-bars"></i>
+        </button>
         <div class="logo">
             <i class="fas fa-cloud-download-alt"></i>
             <span>BGS Client Drive</span>
@@ -276,7 +368,7 @@
     </header>
     
     <div class="container">
-        <div class="sidebar">
+        <div class="sidebar" id="sidebar">
             <div class="sidebar-section">
                 <div class="sidebar-item active" data-view="all">
                     <i class="fas fa-home"></i>
@@ -333,6 +425,8 @@
         const searchInput = document.getElementById('searchInput');
         const sidebarItems = document.querySelectorAll('.sidebar-item');
         const contentTitle = document.getElementById('contentTitle');
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
 
         // File Type Mappings
         const fileTypeIcons = { code: 'fas fa-file-code', image: 'fas fa-file-image', video: 'fas fa-file-video', document: 'fas fa-file-pdf', other: 'fas fa-file' };
@@ -440,8 +534,17 @@
                         currentView = item.dataset.view;
                         contentTitle.textContent = item.querySelector('span').textContent;
                         displayFiles();
+                        // Close sidebar on mobile after selection
+                        if (window.innerWidth <= 768) {
+                            sidebar.classList.remove('active');
+                        }
                     });
                 }
+            });
+            
+            // Mobile menu toggle
+            menuToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
             });
         }
         
