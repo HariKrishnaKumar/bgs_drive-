@@ -9,7 +9,7 @@ import json
 app = FastAPI()
 
 # --- Security and Data ---
-SECRET_KEY = "EEE6EILOQJQG4YSTVYIO7H2RGO2I3DNQ" # The key from setup_2fa.py
+# SECRET_KEY = "L7TFL5BOLXW5GPVXDOEELUE6LUDYXXG6" # The key from setup_2fa.py
 SESSION_SECRET = pyotp.random_base32() # A new secret for signing cookies
 signer = Signer(SESSION_SECRET)
 totp = pyotp.TOTP(SECRET_KEY)
@@ -93,6 +93,27 @@ async def add_file(request: Request):
     FILES_DATABASE.append(new_file)
     save_database()  # Instantly saves the data to the file
     return JSONResponse({"success": True, "message": "File added successfully"})
+
+# --- START: MODIFIED SECTION ---
+@app.delete("/api/files/{file_id}", dependencies=[Depends(get_current_user)])
+async def delete_file(file_id: int):
+    """
+    Deletes a file entry from the database based on its ID.
+    """
+    global FILES_DATABASE
+    initial_count = len(FILES_DATABASE)
+    
+    # Filter out the file to be deleted
+    FILES_DATABASE = [file for file in FILES_DATABASE if file.get("id") != file_id]
+    
+    if len(FILES_DATABASE) < initial_count:
+        save_database()  # Save the updated list to the JSON file
+        return JSONResponse({"success": True, "message": "File deleted successfully"})
+    else:
+        # If no file was found with the given ID, raise an error
+        raise HTTPException(status_code=404, detail="File not found")
+# --- END: MODIFIED SECTION ---
+
 
 # --- Page Serving ---
 
